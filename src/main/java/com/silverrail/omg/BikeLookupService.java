@@ -5,11 +5,13 @@ import com.google.protobuf.util.JsonFormat;
 import com.silverrail.omg.bikelookup.BikeLookupGrpc;
 import com.silverrail.omg.bikelookup.BikeLookupRequest;
 import com.silverrail.omg.bikelookup.BikeLookupReply;
+import com.silverrail.omg.bikelookup.BikeRack;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.List;
 
 /**
  * Server that manages startup/shutdown of a {@code Greeter} server.
@@ -19,11 +21,11 @@ public class BikeLookupService {
 
     private Server server;
 
-    private void start() throws IOException {
-    /* The port on which the server should run */
+    private void start(List<BikeRack> bikeRacks) throws IOException {
+		/* The port on which the server should run */
         int port = 50052;
         server = ServerBuilder.forPort(port)
-                .addService(new BikeLookupImpl())
+                .addService(new BikeLookupImpl(bikeRacks))
                 .build()
                 .start();
         logger.info("Server started, listening on " + port);
@@ -56,22 +58,34 @@ public class BikeLookupService {
     /**
      * Main launches the server from the command line.
      */
-    public static void runService() throws IOException, InterruptedException {
+    public static void runService(List<BikeRack> bikeRacks) throws IOException, InterruptedException {
         final BikeLookupService server = new BikeLookupService();
-        server.start();
+        server.start(bikeRacks);
         server.blockUntilShutdown();
     }
 
     static class BikeLookupImpl extends BikeLookupGrpc.BikeLookupImplBase {
-
+		public BikeLookupImpl(List<BikeRack> bikeRacks) {
+			logger.info("BikeLookupImpl created with " + bikeRacks.size() + " racks");
+			bikeRacks_ = bikeRacks;
+		}
+		
         @Override
         public void lookup(BikeLookupRequest req, StreamObserver<BikeLookupReply> responseObserver) {
-            BikeLookupReply reply = BikeLookupReply
-                    .newBuilder()
-                    .setTimestamp(System.currentTimeMillis())
-                    .build();
-            responseObserver.onNext(reply);
+			BikeLookupReply.Builder replyBuilder = BikeLookupReply
+				.newBuilder()
+				.setTimestamp(System.currentTimeMillis());
+					
+			for (BikeRack rack : bikeRacks_) {
+				if (rack.getSuburb().equals(req.getSuburb()) && (rack.getCapacity() >= req.getMinCapacity())) {
+					replyBuilder.addBikeRack(rack);
+				}
+			}
+					
+            responseObserver.onNext(replyBuilder.build());
             responseObserver.onCompleted();
         }
+		
+		private List<BikeRack> bikeRacks_;
     }
 }

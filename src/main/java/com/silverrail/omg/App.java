@@ -1,5 +1,8 @@
 package com.silverrail.omg;
 
+import java.util.Date;
+import java.util.logging.Logger;
+
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -15,34 +18,39 @@ import com.silverrail.omg.bikelookup.BikeLookupReply;
  */
 public class App 
 {
+    private static final Logger logger = Logger.getLogger(App.class.getName());
+
     public static void main( String[] args )
     {
         try {
 			String sourceUrl = getArgument("source", args);
 			AmazonS3URI source = new AmazonS3URI(sourceUrl);
 			
-			System.out.println("Getting data from: " + source.toString());
-			System.out.println("Region: " + source.getRegion());
-			System.out.println("Bucket: " + source.getBucket());
-			System.out.println("Key   : " + source.getKey());
+			logger.info("Getting data from: " + source.toString());
+			logger.info("Region: " + source.getRegion());
+			logger.info("Bucket: " + source.getBucket());
+			logger.info("Key   : " + source.getKey());
 
 			AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
 			builder.setRegion(source.getRegion());
 			AmazonS3 s3Client = builder.build();
-			System.out.println("Created S3 client in region: " + s3Client.getRegion());
+			logger.info("Created S3 client in region: " + s3Client.getRegion());
 			
 			S3Object object = s3Client.getObject(new GetObjectRequest(source.getBucket(), source.getKey()));
 			S3ObjectInputStream objectData = object.getObjectContent();
 			
 			BikeLookupReply allBikeRacks = BikeLookupReply.parseFrom(objectData);
-			System.out.println("Loaded " + allBikeRacks.getBikeRackList().size() + " bike racks");
+			logger.info("Loaded " + allBikeRacks.getBikeRackList().size() + " bike racks");
 			
 			// Process the objectData stream.
 			objectData.close();
 			
-            //BikeLookupService.runService();
+			Date timestamp = new Date(allBikeRacks.getTimestamp());
+			logger.info("Timestamp of data: " + timestamp);
+			
+            BikeLookupService.runService(allBikeRacks.getBikeRackList());
 
-            System.out.println("Finished");
+            logger.info("Finished");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
