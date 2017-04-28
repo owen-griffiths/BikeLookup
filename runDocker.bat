@@ -1,0 +1,1 @@
+docker run -d --name hello_grpc -p 50052:50052 omg/hello_grpc

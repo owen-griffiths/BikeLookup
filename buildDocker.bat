@@ -1,0 +1,1 @@
+docker build -t omg/hello_grpc:latest .
