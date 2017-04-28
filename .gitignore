@@ -10,7 +10,6 @@ $RECYCLE.BIN/
 
 # Maven output
 target/
-build.txt
 
 # Idea Files
 # User-specific stuff:
