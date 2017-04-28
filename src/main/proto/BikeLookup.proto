@@ -1,10 +1,10 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.silverrail.omg.helloworld";
-option java_outer_classname = "HelloWorldProto";
+option java_package = "com.silverrail.omg.bikelookup";
+option java_outer_classname = "BikeLookupProto";
 
-package helloworld;
+package bike_lookup;
 
 service BikeLookup {
   // Sends a greeting

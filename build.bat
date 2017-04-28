@@ -1,2 +1,2 @@
-mvn compile | tee build.txt
+mvn package | tee build.txt
 

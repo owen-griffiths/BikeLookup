@@ -2,9 +2,9 @@ package com.silverrail.omg;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
-import com.silverrail.omg.helloworld.BikeLookupGrpc;
-import com.silverrail.omg.helloworld.BikeLookupRequest;
-import com.silverrail.omg.helloworld.BikeLookupReply;
+import com.silverrail.omg.bikelookup.BikeLookupGrpc;
+import com.silverrail.omg.bikelookup.BikeLookupRequest;
+import com.silverrail.omg.bikelookup.BikeLookupReply;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
