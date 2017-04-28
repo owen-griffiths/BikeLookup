@@ -18,7 +18,8 @@ public class App
     public static void main( String[] args )
     {
         try {
-			AmazonS3URI source = new AmazonS3URI("http://s3-ap-southeast-2.amazonaws.com/experimental-syd/bikeRacks.pb");
+			String sourceUrl = getArgument("source", args);
+			AmazonS3URI source = new AmazonS3URI(sourceUrl);
 			
 			System.out.println("Getting data from: " + source.toString());
 			System.out.println("Region: " + source.getRegion());
@@ -47,4 +48,16 @@ public class App
             e.printStackTrace();
         }
     }
+	
+	private static String getArgument(String name, String[] args) {
+		String flagValue = "-" + name;
+		
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals(flagValue)) {
+				return args[i+1];
+			}
+		}
+		
+		throw new IllegalArgumentException("Missing argument: " + name);
+	}
 }
