@@ -1,11 +1,9 @@
-package com.silverrail.omg;
+package com.omgcodes.bikelookup;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
-import com.silverrail.omg.bikelookup.BikeLookupGrpc;
-import com.silverrail.omg.bikelookup.BikeLookupRequest;
-import com.silverrail.omg.bikelookup.BikeLookupReply;
-import com.silverrail.omg.bikelookup.BikeRack;
+import com.omgcodes.bikelookup.bikelookup.BikeLookupRequest;
+import com.omgcodes.bikelookup.bikelookup.BikeLookupGrpc;
+import com.omgcodes.bikelookup.bikelookup.BikeLookupReply;
+import com.omgcodes.bikelookup.bikelookup.BikeRack;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -22,7 +20,7 @@ public class BikeLookupService {
     private Server server;
 
     private void start(List<BikeRack> bikeRacks) throws IOException {
-		/* The port on which the server should run */
+        /* The port on which the server should run */
         int port = 50052;
         server = ServerBuilder.forPort(port)
                 .addService(new BikeLookupImpl(bikeRacks))
@@ -65,27 +63,27 @@ public class BikeLookupService {
     }
 
     static class BikeLookupImpl extends BikeLookupGrpc.BikeLookupImplBase {
-		public BikeLookupImpl(List<BikeRack> bikeRacks) {
-			logger.info("BikeLookupImpl created with " + bikeRacks.size() + " racks");
-			bikeRacks_ = bikeRacks;
-		}
-		
+        public BikeLookupImpl(List<BikeRack> bikeRacks) {
+            logger.info("BikeLookupImpl created with " + bikeRacks.size() + " racks");
+            bikeRacks_ = bikeRacks;
+        }
+
         @Override
         public void lookup(BikeLookupRequest req, StreamObserver<BikeLookupReply> responseObserver) {
-			BikeLookupReply.Builder replyBuilder = BikeLookupReply
-				.newBuilder()
-				.setTimestamp(System.currentTimeMillis());
-					
-			for (BikeRack rack : bikeRacks_) {
-				if (rack.getSuburb().equals(req.getSuburb()) && (rack.getCapacity() >= req.getMinCapacity())) {
-					replyBuilder.addBikeRack(rack);
-				}
-			}
-					
+            BikeLookupReply.Builder replyBuilder = BikeLookupReply
+                .newBuilder()
+                .setTimestamp(System.currentTimeMillis());
+
+            for (BikeRack rack : bikeRacks_) {
+                if (rack.getSuburb().equals(req.getSuburb()) && (rack.getCapacity() >= req.getMinCapacity())) {
+                    replyBuilder.addBikeRack(rack);
+                }
+            }
+
             responseObserver.onNext(replyBuilder.build());
             responseObserver.onCompleted();
         }
-		
-		private List<BikeRack> bikeRacks_;
+
+        private List<BikeRack> bikeRacks_;
     }
 }

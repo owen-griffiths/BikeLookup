@@ -1,4 +1,4 @@
-package com.silverrail.omg;
+package com.omgcodes.bikelookup;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
