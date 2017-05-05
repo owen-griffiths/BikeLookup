@@ -1,9 +1,5 @@
 package com.omgcodes.bikelookup;
 
-import com.omgcodes.bikelookup.bikelookup.BikeLookupRequest;
-import com.omgcodes.bikelookup.bikelookup.BikeLookupGrpc;
-import com.omgcodes.bikelookup.bikelookup.BikeLookupReply;
-import com.omgcodes.bikelookup.bikelookup.BikeRack;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -19,9 +15,7 @@ public class BikeLookupService {
 
     private Server server;
 
-    private void start(List<BikeRack> bikeRacks) throws IOException {
-        /* The port on which the server should run */
-        int port = 50052;
+    private void start(int port, List<BikeRack> bikeRacks) throws IOException {
         server = ServerBuilder.forPort(port)
                 .addService(new BikeLookupImpl(bikeRacks))
                 .build()
@@ -56,9 +50,9 @@ public class BikeLookupService {
     /**
      * Main launches the server from the command line.
      */
-    public static void runService(List<BikeRack> bikeRacks) throws IOException, InterruptedException {
+    public static void runService(int port, List<BikeRack> bikeRacks) throws IOException, InterruptedException {
         final BikeLookupService server = new BikeLookupService();
-        server.start(bikeRacks);
+        server.start(port, bikeRacks);
         server.blockUntilShutdown();
     }
 
@@ -70,6 +64,8 @@ public class BikeLookupService {
 
         @Override
         public void lookup(BikeLookupRequest req, StreamObserver<BikeLookupReply> responseObserver) {
+            logger.info("BikeLookup for " + req.getSuburb());
+
             BikeLookupReply.Builder replyBuilder = BikeLookupReply
                 .newBuilder()
                 .setTimestamp(System.currentTimeMillis());
