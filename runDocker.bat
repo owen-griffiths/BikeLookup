@@ -1,1 +1,1 @@
-docker run -d --name hello_grpc -p 50052:50052 omg/hello_grpc
+docker run -p 50052:50052 -it --name hello_grpc -e AWS_ACCESS_KEY_ID=%AWS_ACCESS_KEY_ID% -e AWS_SECRET_ACCESS_KEY=%AWS_SECRET_ACCESS_KEY% omg/hello_grpc -source http://s3-ap-southeast-2.amazonaws.com/experimental-syd/bikeRacks.pb -port 50052

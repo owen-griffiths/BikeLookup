@@ -10,8 +10,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
-import com.omgcodes.bikelookup.bikelookup.BikeLookupReply;
-
 /**
  * Hello world!
  *
@@ -35,6 +33,7 @@ public class App
 
             AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
             builder.setRegion(source.getRegion());
+
             AmazonS3 s3Client = builder.build();
             logger.info("Created S3 client in region: " + s3Client.getRegion());
 
@@ -50,7 +49,9 @@ public class App
             Date timestamp = new Date(allBikeRacks.getTimestamp());
             logger.info("Timestamp of data: " + timestamp);
 
-            BikeLookupService.runService(allBikeRacks.getBikeRackList());
+            int port = getIntArgument("port", args);
+
+            BikeLookupService.runService(port, allBikeRacks.getBikeRackList());
 
             logger.info("Finished");
         } catch (Exception e) {
@@ -70,4 +71,17 @@ public class App
 
         throw new IllegalArgumentException("Missing argument: " + name);
     }
+
+    private static int getIntArgument(String name, String[] args) {
+        String flagValue = "-" + name;
+
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals(flagValue)) {
+                return Integer.parseInt(args[i+1]);
+            }
+        }
+
+        throw new IllegalArgumentException("Missing argument: " + name);
+    }
+
 }
