@@ -1,0 +1,2 @@
+suburb: "City"
+min_capacity: 20

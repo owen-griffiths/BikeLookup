@@ -21,6 +21,7 @@ message BikeLookupRequest {
 message BikeLookupReply {
   repeated BikeRack bike_rack = 1;
   int64 timestamp = 2;
+  int64 totalCpuTime = 3;
 }
 
 message BikeRack {
